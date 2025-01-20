@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import NavBar from "@/components/Navbar";
 import "./globals.css";
 import Header from "@/components/Header";
+import LoginForm from "./_components/LoginForm";
 
 
 
@@ -18,10 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en" data-theme="cmyk">
       <body> 
-      <Header/>
-      <NavBar>
-        {children}
-        </NavBar>
+        <LoginForm/>
       </body>
     </html>
   );

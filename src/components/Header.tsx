@@ -10,8 +10,8 @@ const Header = () => {
 
   return (
     <div className="navbar shadow-lg bg-primary ">
-      <div className="navbar-start ml-5">
-        <Image src={logo} alt="logo" className="h-12 w-auto" />
+      <div className="navbar-start ml-2">
+        <Image src={logo} alt="logo" className="h-10 w-auto" />
       </div>
 
       <div className="navbar-center  hidden sm:block">
@@ -19,8 +19,8 @@ const Header = () => {
       </div>
 
       <div className="avatar placeholder navbar-end">
-      <div className="bg-neutral text-neutral-content w-12 rounded-lg">
-            <span>SY</span>
+      <div className="bg-blue-950 text-white text-2xl  w-12 rounded-lg">
+            <span>B</span>
         </div>
       </div>
     </div>
