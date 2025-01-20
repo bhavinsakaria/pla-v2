@@ -33,11 +33,11 @@ model Dispatch {
 }
 
 model User {
-  id             String   @id
+  id             String   @id @default(uuid())
   username       String   @unique
   password       String
   role           String   @default("user")
   authProviderId String?
   createdAt      DateTime @default(now())
-  updatedAt      DateTime
+  updatedAt      DateTime @updatedAt
 }
