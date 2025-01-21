@@ -4,6 +4,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { LogOut } from "@/action/user";
 import logo from "@/assets/images/logo-white.png";
+import Link from "next/link";
 
 interface HeaderProps {
   user?: {
@@ -51,7 +52,7 @@ const Header: React.FC<HeaderProps> = ({ user }) => {
               <a onClick={handleLogout}>Logout</a>
             </li>
             <li>
-              <a>Register User</a>
+              <Link href="/user/register">Register User</Link>
             </li>
           </ul>
         </div>

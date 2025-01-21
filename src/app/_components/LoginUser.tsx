@@ -9,9 +9,9 @@ const LoginUser = () => {
     <div className="hero bg-base-200 min-h-screen">
       <div className="hero-content flex-col lg:flex-row-reverse">
         <div className="card bg-base-100 w-full max-w-md shrink-0 shadow-2xl">
-          <h1>Log In </h1>
           <form className="card-body" action={authUser}>
             <Image src={logo} alt="logo" className="h-50 w-auto" />
+            <h1 className="text-2xl font-bold text-center">Log In </h1>
             <div className="form-control">
               <label className="label">
                 <span className="label-text ">Email</span>
