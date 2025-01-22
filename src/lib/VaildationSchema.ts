@@ -25,6 +25,7 @@ export const dispatchRegisterSchema = z.object({
     .string()
     .min(1, "Transport name must have at least 1 character")
     .optional(),
+  orderStatus: z.string().optional(),
 });
 
 export type DispatchRegister = z.infer<typeof dispatchRegisterSchema>;
