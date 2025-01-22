@@ -4,12 +4,14 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { LogOut } from "@/action/user";
 import logo from "@/assets/images/logo-white.png";
+import DispatchStats from "@/app/dispatch/_component/DispatchStats";
 import Link from "next/link";
 
 interface HeaderProps {
   user?: {
-    username: string;
+    username?: string;
   };
+  
 }
 
 const Header: React.FC<HeaderProps> = ({ user }) => {
@@ -29,7 +31,7 @@ const Header: React.FC<HeaderProps> = ({ user }) => {
 
       {/* Navbar Center */}
       <div className="navbar-center hidden sm:block">
-        {pathname === "/dispatch" && <div>Stat</div>}
+        {pathname === "/dispatch" && <div><DispatchStats /></div>}
       </div>
 
       {/* Navbar End */}

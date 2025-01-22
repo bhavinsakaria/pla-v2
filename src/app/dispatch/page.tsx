@@ -3,14 +3,14 @@ import React, { useState, KeyboardEvent, FormEvent } from "react";
 
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
 
 import {
   dispatchRegisterSchema,
-  dispatchUpdateSchema,
-  type DispatchRegister,
-  type DispatchUpdate,
+  type DispatchRegister
 } from "@/lib/VaildationSchema";
 
+import axios from "axios"; // Ensure axios is imported
 import { toast } from "react-toastify";
 import useSerialPort from "@/lib/serialPort";
 import ErrorMessage from "@/components/ErrorMessage";
@@ -20,7 +20,6 @@ type CleanInputFn = (input: string) => string;
 type GenerateRandomIDFn = (prefix?: string, length?: number) => string;
 type GenerateRandomOrderAmtFn = () => number;
 type HandleScanFn = (e: KeyboardEvent<HTMLInputElement>) => void;
-type HandleResetFn = (e: FormEvent) => void;
 
 const DispatchScreen: React.FC = () => {
   const [isManual, setIsManual] = useState<boolean>(false);
@@ -32,43 +31,56 @@ const DispatchScreen: React.FC = () => {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<DispatchRegister | DispatchUpdate>({
-    resolver: zodResolver(
-      isManual ? dispatchUpdateSchema : dispatchRegisterSchema
-    ),
+  } = useForm({
+    resolver: zodResolver(dispatchRegisterSchema),
   });
 
-  const cleanInput: CleanInputFn = (input) => {
-    return input
-      .replace(/\[/g, "{") // Replace opening square brackets with curly braces
-      .replace(/\]/g, "}") // Replace closing square brackets with curly braces
-      .replace(/Shift|ArrowDown/g, "") // Remove unwanted keys
-      .replace(/(\s){2,}/g, " ") // Remove extra spaces
-      .trim() // Remove leading and trailing spaces
-      .toUpperCase(); // Convert to uppercase
+  const mutation = useMutation({
+    mutationFn: (data: DispatchRegister) =>
+      axios.post("/api/dispatch/", data),
+    onSuccess: () => {
+      toast.success("Record Added successfully");
+      reset();
+      setRefreshTable((prev) => !prev);
+    },
+    onError: (err: any) => {
+      toast.error(err.response?.data?.message || "Something went wrong");
+    },
+  });
+
+  const onSubmit: SubmitHandler<DispatchRegister> = (data) => {
+    console.log(data)
+    mutation.mutate(data);
   };
+
+  const cleanInput: CleanInputFn = (input) =>
+    input
+      .replace(/\[/g, "{")
+      .replace(/\]/g, "}")
+      .replace(/Shift|ArrowDown/g, "")
+      .replace(/(\s){2,}/g, " ")
+      .trim()
+      .toUpperCase();
 
   const generateRandomID: GenerateRandomIDFn = (prefix = "CA", length = 6) => {
     const number = Math.floor(Math.random() * Math.pow(10, length));
     return `${prefix}${number.toString().padStart(length, "0")}`;
   };
 
-  const generateRandomOrderAmt: GenerateRandomOrderAmtFn = () => {
-    return Math.floor(Math.random() * 10000) + 1;
-  };
+  const generateRandomOrderAmt: GenerateRandomOrderAmtFn = () =>
+    Math.floor(Math.random() * 10000) + 1;
 
-  const handelScan: HandleScanFn = async (e) => {
+  const handleScan: HandleScanFn = (e) => {
     if (e.key === "Enter") {
-      const input = e.currentTarget.value;
+      const input = e.currentTarget.value.trim();
+      e.currentTarget.value = "";
       const cleanedInput = cleanInput(input);
 
       if (cleanedInput.includes("{") && cleanedInput.includes("}")) {
         try {
           const parsedData = JSON.parse(cleanedInput);
-
           if (!parsedData.TN) {
-            toast.error("Invalid JSON format");
-            e.currentTarget.value = "";
+            toast.error("Invalid JSON format. Missing TN field.");
           } else {
             const data: DispatchRegister = {
               challanNo: generateRandomID(),
@@ -79,35 +91,27 @@ const DispatchScreen: React.FC = () => {
               transportName: parsedData.TN?.trim(),
               orderAmt: generateRandomOrderAmt(),
             };
-
-            e.currentTarget.value = "";
+            mutation.mutate(data);
           }
         } catch (error) {
-          e.currentTarget.value = "";
-          toast.error(`Not a valid JSON format: ${error}`);
+          toast.error(`Not a valid JSON format: ${error.message}`);
         }
       } else {
-        e.currentTarget.value = "";
-        toast.error("Enter Scan Data");
+        toast.error("Enter Scan Data in JSON format");
       }
     }
-  };
-
-  const handleReset: HandleResetFn = (e) => {
-    e.preventDefault();
-    reset();
   };
 
   return (
     <div>
       <div className="card flex flex-nowrap justify-center mt-2 shadow-md lg:max-w-7xl mx-auto p-5">
-        {serialData || "No data received."}
+        <div>{serialData || "No data received."}</div>
         {!isManual ? (
           <div>
             <input
               type="text"
               placeholder="Please Scan Here"
-              onKeyDown={handelScan}
+              onKeyDown={handleScan}
               className="input input-primary border-gray-300 w-full lg:w-3/4 hover:border-gray-400"
             />
             <button
@@ -129,8 +133,8 @@ const DispatchScreen: React.FC = () => {
             </button>
           </div>
         ) : (
-          <form>
-            <div className=" flex-wrap grid grid-cols-5 lg:max-w-full">
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="flex flex-wrap grid-cols-5 lg:max-w-full">
               <label className="form-control mr-2 w-full lg:w-2/12">
                 <div className="label">
                   <span className="label-text text-lg">Challan No.</span>
@@ -141,9 +145,7 @@ const DispatchScreen: React.FC = () => {
                   {...register("challanNo")}
                   className="input input-primary border-gray-300 hover:border-gray-400"
                 />
-                <ErrorMessage>
-                  {"challanNo" in errors ? errors?.challanNo?.message : ""}
-                </ErrorMessage>
+                <ErrorMessage>{errors.challanNo?.message}</ErrorMessage>
               </label>
               <label className="form-control mr-2 w-full lg:w-2/12">
                 <div className="label">
@@ -166,7 +168,7 @@ const DispatchScreen: React.FC = () => {
                   {...register("partyName")}
                   className="input input-primary border-gray-300 hover:border-gray-400"
                 />
-                {"challanNo" in errors ? errors?.partyName?.message : ""}
+                <ErrorMessage>{errors.partyName?.message}</ErrorMessage>
               </label>
               <label className="form-control mr-2 w-full lg:w-2/12">
                 <div className="label">
@@ -188,7 +190,7 @@ const DispatchScreen: React.FC = () => {
                   type="number"
                   placeholder="Enter Order Amount"
                   {...register("orderAmt", {
-                    setValueAs: (value) => parseFloat(value) || 0,
+                    valueAsNumber: true,
                   })}
                   className="input input-primary border-gray-300 hover:border-gray-400"
                 />
@@ -203,17 +205,15 @@ const DispatchScreen: React.FC = () => {
                 Submit
               </button>
               <button
-                className="btn bg-accent hover:bg-yellow-600 text-black ml-5"
-                onClick={handleReset}
+                type="button"
+                className="btn bg-yellow-500 hover:bg-yellow-600 text-white ml-5"
+                onClick={() => reset()}
               >
                 Reset
               </button>
               <button
-                className="btn btn-active text-black mx-5"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setIsManual(false);
-                }}
+                className="btn btn-accent text-white mx-5"
+                onClick={() => setIsManual(false)}
               >
                 Scan
               </button>

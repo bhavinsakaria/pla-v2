@@ -48,7 +48,7 @@ const NavBar = ({ children }: { children: React.ReactNode }) => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-2 min-w-0 overflow-auto">{children}</div>
+      <div className="flex-1 p-2 min-w-0 overflow-auto bg-white">{children}</div>
     </div>
   );
 };

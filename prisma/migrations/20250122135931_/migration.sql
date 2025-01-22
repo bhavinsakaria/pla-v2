@@ -2,7 +2,7 @@
 CREATE TABLE "Dispatch" (
     "id" TEXT NOT NULL,
     "challanNo" TEXT NOT NULL,
-    "challanDate" TIMESTAMP(3) NOT NULL,
+    "challanDate" TIMESTAMP(3),
     "partyCode" TEXT,
     "partyName" TEXT NOT NULL,
     "partyPlace" TEXT NOT NULL,
@@ -15,7 +15,7 @@ CREATE TABLE "Dispatch" (
     "invoiceNo" TEXT,
     "invoiceDate" TIMESTAMP(3),
     "packingTime" TIMESTAMP(3),
-    "overStatus" TEXT,
+    "orderStatus" TEXT,
     "remarks" TEXT,
     "tags" JSONB,
     "totalItems" INTEGER,

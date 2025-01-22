@@ -5,14 +5,14 @@ import { registerUser } from "@/action/user";
 
 const RegisterUser = () => {
   return (
-    <div className="hero bg-base-200 min-h-screen">
+    <div className="hero bg-white min-h-screen">
       <div className="hero-content flex-col lg:flex-row-reverse">
         <div className="card bg-base-100 w-full max-w-md shrink-0 shadow-2xl">
           <form className="card-body" action={registerUser}>
             <Image src={logo} alt="logo" className="h-50 w-auto" />
             <div className="form-control">
               <label className="label">
-                <span className="label-text ">Email</span>
+                <span className="label-text ">Enter Username</span>
               </label>
               <input
                 type="username"

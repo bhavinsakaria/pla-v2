@@ -1,5 +1,5 @@
 "use server";
-import prisma from "@/lib/prisma";
+import db from "@/lib/prisma";
 import { hash } from "bcryptjs";
 import { signIn, signOut } from "../auth";
 import { redirect } from "next/navigation";
@@ -40,7 +40,7 @@ const registerUser = async (formData: FormData): Promise<void> => {
   }
 
   // Check if the user already exists
-  const existingUser = await prisma.user.findUnique({
+  const existingUser = await db.user.findUnique({
     where: {
       username,
     },
@@ -53,7 +53,7 @@ const registerUser = async (formData: FormData): Promise<void> => {
   // Hash the password
   const hashedPassword = await hash(password, 12);
   // Create the new user
-  await prisma.user.create({
+  await db.user.create({
     data: {
       username,
       password: hashedPassword,

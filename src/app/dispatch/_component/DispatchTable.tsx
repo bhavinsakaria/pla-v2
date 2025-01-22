@@ -35,12 +35,10 @@ const DispatchTable: React.FC<DispatchTableProps> = ({ refreshTrigger }) => {
     refetch,
   } = useQuery<DispatchData[]>({
     queryKey: ["dispatch"],
-    queryFn: async () => {
-      const response = await axios.get("/api/dispatch");
+    queryFn: async () =>{
+      const response = await axios.get("/api/dispatch")
       return response.data;
-    },
-    onError: (error) =>
-      console.error("Error fetching dispatch data:", (error as Error).message),
+    }
   });
 
   useEffect(() => {
@@ -56,6 +54,7 @@ const DispatchTable: React.FC<DispatchTableProps> = ({ refreshTrigger }) => {
       item.partyName?.toLowerCase().includes(term) ||
       item.challanNo?.toLowerCase().includes(term) ||
       item.orderStatus?.toLowerCase().includes(term)
+      
     );
   });
 

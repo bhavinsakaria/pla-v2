@@ -6,7 +6,7 @@ import { authUser } from "@/action/user";
 
 const LoginUser = () => {
   return (
-    <div className="hero bg-base-200 min-h-screen">
+    <div className="hero bg-primary min-h-screen">
       <div className="hero-content flex-col lg:flex-row-reverse">
         <div className="card bg-base-100 w-full max-w-md shrink-0 shadow-2xl">
           <form className="card-body" action={authUser}>

@@ -8,9 +8,9 @@ datasource db {
 }
 
 model Dispatch {
-  id            String    @id
+  id            String    @id @default(uuid())
   challanNo     String    @unique
-  challanDate   DateTime
+  challanDate   DateTime?
   partyCode     String?
   partyName     String
   partyPlace    String
@@ -23,13 +23,13 @@ model Dispatch {
   invoiceNo     String?
   invoiceDate   DateTime?
   packingTime   DateTime?
-  overStatus    String?
+  orderStatus   String?
   remarks       String?
   tags          Json?
   totalItems    Int?
   totalQty      Int?
   createdAt     DateTime  @default(now())
-  updatedAt     DateTime
+  updatedAt     DateTime  @updatedAt
 }
 
 model User {
