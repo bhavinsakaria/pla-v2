@@ -123,6 +123,55 @@ const DispatchScreen: React.FC = () => {
                 <ErrorMessage>{errors.challanNo?.message}</ErrorMessage>
               </label>
               {/* Other Fields */}
+              <label className="form-control mr-2 w-full lg:w-2/12">
+                <div className="label">
+                  <span className="label-text text-lg">Challan Date</span>
+                </div>
+                <input
+                  type="date"
+                  placeholder="Enter Challan Date"
+                  {...register("challanDate")}
+                  className="input input-primary border-gray-300 hover:border-gray-400"
+                />
+                <ErrorMessage>{errors.challanDate?.message}</ErrorMessage>
+              </label>
+              <label className="form-control mr-2  w-full lg:w-3/12">
+                <div className="label">
+                  <span className="label-text text-lg">Party Name</span>
+                </div>
+                <input
+                  type="text"
+                  placeholder="Enter Party Name"
+                  {...register("partyName")}
+                  className="input input-primary border-gray-300 hover:border-gray-400"
+                />
+                <ErrorMessage>{errors.partyName?.message}</ErrorMessage>
+              </label>
+              <label className="form-control mr-2 w-full lg:w-2/12">
+                <div className="label">
+                  <span className="label-text text-lg">Station</span>
+                </div>
+                <input
+                  type="text"
+                  placeholder="Enter Party Place"
+                  {...register("partyPlace")}
+                  className="input input-primary border-gray-300 hover:border-gray-400"
+                />
+                <ErrorMessage>{errors.partyPlace?.message}</ErrorMessage>
+              </label>
+              <label className="form-control mr-2 w-full lg:w-2/12">
+                <div className="label">
+                  <span className="label-text text-lg">Order Amount</span>
+                </div>
+                <input
+                  type="number"
+                  placeholder="Enter Party Place"
+                  {...register("orderAmt", { valueAsNumber: true })}
+                  className="input input-primary border-gray-300 hover:border-gray-400"
+                />
+                <ErrorMessage>{errors.orderAmt?.message}</ErrorMessage>
+              </label>
+              
             </div>
             <div className="flex mt-3">
               <button
