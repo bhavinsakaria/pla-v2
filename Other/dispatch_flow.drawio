@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 Edg/132.0.0.0" version="26.0.11">
   <diagram name="Page-1" id="a1UYQKwkdaG06sgzA5iz">
-    <mxGraphModel dx="1120" dy="645" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+    <mxGraphModel dx="951" dy="556" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -64,6 +64,12 @@
         <mxCell id="ut-iU9elBqPr8QoLCNjq-56" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.75;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="ut-iU9elBqPr8QoLCNjq-35" target="ut-iU9elBqPr8QoLCNjq-17">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
+        <mxCell id="ut-iU9elBqPr8QoLCNjq-59" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="ut-iU9elBqPr8QoLCNjq-35" target="ut-iU9elBqPr8QoLCNjq-57">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ut-iU9elBqPr8QoLCNjq-60" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="ut-iU9elBqPr8QoLCNjq-35" target="ut-iU9elBqPr8QoLCNjq-47">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
         <mxCell id="ut-iU9elBqPr8QoLCNjq-35" value="Check Current&lt;br&gt;Order Status" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;rounded=0;" vertex="1" parent="1">
           <mxGeometry x="520" y="260" width="120" height="80" as="geometry" />
         </mxCell>
@@ -88,8 +94,8 @@
         <mxCell id="ut-iU9elBqPr8QoLCNjq-51" value="Sync Process&lt;br&gt;Dipsatch ~ mdis" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="1">
           <mxGeometry x="198" y="10" width="100" height="100" as="geometry" />
         </mxCell>
-        <mxCell id="ut-iU9elBqPr8QoLCNjq-53" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.75;exitDx=0;exitDy=0;entryX=0.932;entryY=0.068;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="ut-iU9elBqPr8QoLCNjq-35" target="ut-iU9elBqPr8QoLCNjq-47">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="ut-iU9elBqPr8QoLCNjq-57" value="4) Direct Mark as dispatched/delivered with POD" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="880" y="435" width="160" height="60" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

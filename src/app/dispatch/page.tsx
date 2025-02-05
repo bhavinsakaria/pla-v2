@@ -2,20 +2,17 @@
 import React, { useState, KeyboardEvent, useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
 import {
   dispatchRegisterSchema,
   type DispatchRegister,
 } from "@/lib/VaildationSchema";
-import axios from "axios";
 import { toast } from "react-toastify";
 import useSerialPort from "@/lib/serialPort";
+import {saveDispatchRecord} from "@/action/dispatchReg/dispatch";
 import ErrorMessage from "@/components/ErrorMessage";
 import DispatchTable from "@/components/Dispatch/DispatchTable";
 
 type CleanInputFn = (input: string) => string;
-type GenerateRandomIDFn = (prefix?: string, length?: number) => string;
-type GenerateRandomOrderAmtFn = () => number;
 
 const DispatchScreen: React.FC = () => {
   const [isManual, setIsManual] = useState<boolean>(false);
@@ -34,27 +31,25 @@ const DispatchScreen: React.FC = () => {
     resolver: zodResolver(dispatchRegisterSchema),
   });
 
-  const mutation = useMutation({
-    mutationFn: (data: DispatchRegister) => axios.post("/api/dispatch/", data),
-    onSuccess: () => {
+  const onSubmit: SubmitHandler<DispatchRegister> = async (data) => {
+    try {
+      await saveDispatchRecord(data);
       toast.success("Record added successfully");
       reset();
-      setRefreshTable((prev) => !prev);
-    },
-    onError: (err: any) => {
-      toast.error(err.response?.data?.message || "Something went wrong");
-    },
-  });
-
-  const onSubmit: SubmitHandler<DispatchRegister> = (data) => {
-    mutation.mutate(data);
+    } catch (error:unknown) {
+      toast.error((error as Error).message || "Something went wrong");
+    }
   };
 
   useEffect(() => {
     if (serialData && serialData !== prevData) {
       try {
         const parsedData = processData(serialData);
-        mutation.mutate(parsedData);
+        console.log(parsedData)
+        saveDispatchRecord(parsedData).then(() => {
+          toast.success("Record added successfully");
+          setRefreshTable((prev) => !prev);
+        });
       } catch (error: any) {
         toast.error(error.message || "Invalid input");
       }
@@ -68,7 +63,10 @@ const DispatchScreen: React.FC = () => {
       e.currentTarget.value = "";
       try {
         const parsedData = processData(input);
-        mutation.mutate(parsedData);
+        saveDispatchRecord(parsedData).then(() => {
+          toast.success("Record added successfully");
+          setRefreshTable((prev) => !prev);
+        });
       } catch (error: any) {
         toast.error(error.message || "Invalid input");
       }
@@ -77,18 +75,13 @@ const DispatchScreen: React.FC = () => {
 
   return (
     <div>
-      <div className="card flex flex-nowrap justify-center mt-2 shadow-md lg:max-w-7xl mx-auto p-5">
+     
         <div>{connectionStatus || ""}</div>
 
         {!isManual ? (
+          
           <div>
-            <input
-              type="text"
-              placeholder="Please Scan Here"
-              onKeyDown={handleScan}
-              className="input input-primary border-gray-300 w-full lg:w-3/4 hover:border-gray-400"
-            />
-            <button
+                  <button
               className={`btn ${
                 connected
                   ? "bg-green-600 cursor-not-allowed"
@@ -105,8 +98,17 @@ const DispatchScreen: React.FC = () => {
             >
               Manual
             </button>
+            {!connected ? (
+                          <input
+                          type="text"
+                          placeholder="Please Scan Here"
+                          onKeyDown={handleScan}
+                          className="input input-primary border-gray-300 w-full lg:w-3/4 hover:border-gray-400"
+                        />
+            ):null}
           </div>
         ) : (
+          <div className="card flex flex-nowrap justify-center mt-2 shadow-md lg:max-w-7xl mx-auto p-5">
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-wrap grid-cols-5 lg:max-w-full">
               {/* Fields */}
@@ -195,8 +197,9 @@ const DispatchScreen: React.FC = () => {
               </button>
             </div>
           </form>
+          </div>
         )}
-      </div>
+      
       <DispatchTable refreshTrigger={refreshTable} />
     </div>
   );
@@ -204,14 +207,6 @@ const DispatchScreen: React.FC = () => {
 
 export default DispatchScreen;
 
-// Helper functions
-const generateRandomID: GenerateRandomIDFn = (prefix = "CA", length = 6) => {
-  const number = Math.floor(Math.random() * Math.pow(10, length));
-  return `${prefix}${number.toString().padStart(length, "0")}`;
-};
-
-const generateRandomOrderAmt: GenerateRandomOrderAmtFn = () =>
-  Math.floor(Math.random() * 10000) + 1;
 
 const cleanInput: CleanInputFn = (input) =>
   input
@@ -239,7 +234,6 @@ function processData(input: string): DispatchRegister {
         partyPlace: parsedData.STN?.trim(),
         transportName: parsedData.TN?.trim(),
         orderStatus: "Printed",
-        orderAmt: generateRandomOrderAmt(),
       };
     } catch (error: any) {
       throw new Error(`Failed to parse JSON: ${error.message}`);
