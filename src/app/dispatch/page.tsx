@@ -11,7 +11,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import useSerialPort from "@/lib/serialPort";
 import ErrorMessage from "@/components/ErrorMessage";
-import DispatchTable from "./_component/DispatchTable";
+import DispatchTable from "@/components/Dispatch/DispatchTable";
 
 type CleanInputFn = (input: string) => string;
 type GenerateRandomIDFn = (prefix?: string, length?: number) => string;

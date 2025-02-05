@@ -14,6 +14,7 @@ interface DispatchData {
   partyName: string;
   partyPlace: string;
   orderAmt: number;
+  invoiceNo?: string;
   tags?: string;
   orderStatus?: string;
 }
@@ -122,11 +123,12 @@ const DispatchTable: React.FC<DispatchTableProps> = ({ refreshTrigger }) => {
                   Challan Date
                 </th>
                 <th className="border p-1 text-center border-gray-300">
-                  Party Name
+                  Invoice No
                 </th>
                 <th className="border p-1 text-center border-gray-300">
-                  Place
+                  Party Name
                 </th>
+
                 <th className="border p-1 text-center border-gray-300">
                   Order Amount
                 </th>
@@ -153,13 +155,14 @@ const DispatchTable: React.FC<DispatchTableProps> = ({ refreshTrigger }) => {
                       {new Date(item.challanDate).toLocaleDateString()}
                     </td>
                     <td className="border p-0 text-center border-gray-300">
+                      {item.invoiceNo}
+                    </td>
+                    <td className="border p-0 text-center border-gray-300">
                       {item.partyName}
                     </td>
+            
                     <td className="border p-0 text-center border-gray-300">
-                      {item.partyPlace}
-                    </td>
-                    <td className="border p-0 text-center border-gray-300">
-                      {item.orderAmt}
+                    {new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(item.orderAmt)}
                     </td>
                     <td className="border p-0 text-center border-gray-300">
                       {item.tags}

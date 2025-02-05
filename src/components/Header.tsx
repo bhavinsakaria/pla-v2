@@ -4,7 +4,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { LogOut } from "@/action/user";
 import logo from "@/assets/images/logo-white.png";
-import DispatchStats from "@/app/dispatch/_component/DispatchStats";
+import DispatchStats from "@/components/Dispatch/DispatchStats";
 import Link from "next/link";
 
 interface HeaderProps {
