@@ -8,7 +8,7 @@ import {
 } from "@/lib/VaildationSchema";
 import { toast } from "react-toastify";
 import useSerialPort from "@/lib/serialPort";
-import {saveDispatchRecord} from "@/action/dispatchReg/dispatch";
+import { saveDispatchRecord } from "@/action/dispatchReg/dispatch";
 import ErrorMessage from "@/components/ErrorMessage";
 import DispatchTable from "@/components/Dispatch/DispatchTable";
 
@@ -36,24 +36,25 @@ const DispatchScreen: React.FC = () => {
       await saveDispatchRecord(data);
       toast.success("Record added successfully");
       reset();
-    } catch (error:unknown) {
+    } catch (error: unknown) {
       toast.error((error as Error).message || "Something went wrong");
     }
   };
 
   useEffect(() => {
     if (serialData && serialData !== prevData) {
-      try {
-        const parsedData = processData(serialData);
-        console.log(parsedData)
-        saveDispatchRecord(parsedData).then(() => {
+      (async () => {
+        try {
+          const parsedData = processData(serialData);
+
+          await saveDispatchRecord(parsedData);
           toast.success("Record added successfully");
           setRefreshTable((prev) => !prev);
-        });
-      } catch (error: any) {
-        toast.error(error.message || "Invalid input");
-      }
-      setPrevData(serialData);
+        } catch (error: any) {
+          toast.error(error.message || "Invalid input");
+        }
+        setPrevData(serialData);
+      })();
     }
   }, [serialData, connected]);
 
@@ -75,40 +76,38 @@ const DispatchScreen: React.FC = () => {
 
   return (
     <div>
-     
-        <div>{connectionStatus || ""}</div>
+      <div>{connectionStatus || ""}</div>
 
-        {!isManual ? (
-          
-          <div>
-                  <button
-              className={`btn ${
-                connected
-                  ? "bg-green-600 cursor-not-allowed"
-                  : "bg-red-600 hover:bg-red-500"
-              } text-white m-2`}
-              disabled={connected}
-              onClick={connectToSerialPort}
-            >
-              {connected ? "Connected" : "Connect"}
-            </button>
-            <button
-              className="btn btn-active text-black m-2"
-              onClick={() => setIsManual(true)}
-            >
-              Manual
-            </button>
-            {!connected ? (
-                          <input
-                          type="text"
-                          placeholder="Please Scan Here"
-                          onKeyDown={handleScan}
-                          className="input input-primary border-gray-300 w-full lg:w-3/4 hover:border-gray-400"
-                        />
-            ):null}
-          </div>
-        ) : (
-          <div className="card flex flex-nowrap justify-center mt-2 shadow-md lg:max-w-7xl mx-auto p-5">
+      {!isManual ? (
+        <div>
+          <button
+            className={`btn ${
+              connected
+                ? "bg-green-600 cursor-not-allowed"
+                : "bg-red-600 hover:bg-red-500"
+            } text-white m-2`}
+            disabled={connected}
+            onClick={connectToSerialPort}
+          >
+            {connected ? "Connected" : "Connect"}
+          </button>
+          <button
+            className="btn btn-active text-black m-2"
+            onClick={() => setIsManual(true)}
+          >
+            Manual
+          </button>
+          {!connected ? (
+            <input
+              type="text"
+              placeholder="Please Scan Here"
+              onKeyDown={handleScan}
+              className="input input-primary border-gray-300 w-full lg:w-3/4 hover:border-gray-400"
+            />
+          ) : null}
+        </div>
+      ) : (
+        <div className="card flex flex-nowrap justify-center mt-2 shadow-md lg:max-w-7xl mx-auto p-5">
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-wrap grid-cols-5 lg:max-w-full">
               {/* Fields */}
@@ -173,7 +172,6 @@ const DispatchScreen: React.FC = () => {
                 />
                 <ErrorMessage>{errors.orderAmt?.message}</ErrorMessage>
               </label>
-              
             </div>
             <div className="flex mt-3">
               <button
@@ -197,16 +195,15 @@ const DispatchScreen: React.FC = () => {
               </button>
             </div>
           </form>
-          </div>
-        )}
-      
+        </div>
+      )}
+
       <DispatchTable refreshTrigger={refreshTable} />
     </div>
   );
 };
 
 export default DispatchScreen;
-
 
 const cleanInput: CleanInputFn = (input) =>
   input
@@ -228,7 +225,6 @@ function processData(input: string): DispatchRegister {
       }
       return {
         challanNo: parsedData.DN.trim(),
-        challanDate: new Date(),
         partyCode: parsedData.PC?.trim() || null,
         partyName: parsedData.PN?.trim(),
         partyPlace: parsedData.STN?.trim(),

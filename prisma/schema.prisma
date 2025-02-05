@@ -367,7 +367,7 @@ model users {
 
 model Dispatch {
   id            String    @id @default(uuid())
-  challanNo     String?
+  challanNo     String    @unique
   challanDate   DateTime?
   partyCode     String?
   partyName     String

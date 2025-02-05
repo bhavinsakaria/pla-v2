@@ -4,16 +4,17 @@ import React, { useState, useEffect } from "react";
 import { FaEdit } from "react-icons/fa";
 import { ImCross } from "react-icons/im";
 import { useQuery } from "@tanstack/react-query";
+import { getDispatchRecord } from "@/action/dispatchReg/dispatch";
 import axios from "axios";
 import Link from "next/link";
 
 interface DispatchData {
-  id: number;
-  challanNo: string;
-  challanDate: string;
-  partyName: string;
-  partyPlace: string;
-  orderAmt: number;
+  id?: number;
+  challanNo?: string;
+  challanDate?: string;
+  partyName?: string;
+  partyPlace?: string;
+  orderAmt?: number;
   invoiceNo?: string;
   tags?: string;
   orderStatus?: string;
@@ -36,10 +37,7 @@ const DispatchTable: React.FC<DispatchTableProps> = ({ refreshTrigger }) => {
     refetch,
   } = useQuery<DispatchData[]>({
     queryKey: ["dispatch"],
-    queryFn: async () =>{
-      const response = await axios.get("/api/dispatch")
-      return response.data;
-    }
+    queryFn: () => getDispatchRecord(),
   });
 
   useEffect(() => {
@@ -55,7 +53,6 @@ const DispatchTable: React.FC<DispatchTableProps> = ({ refreshTrigger }) => {
       item.partyName?.toLowerCase().includes(term) ||
       item.challanNo?.toLowerCase().includes(term) ||
       item.orderStatus?.toLowerCase().includes(term)
-      
     );
   });
 
@@ -160,9 +157,13 @@ const DispatchTable: React.FC<DispatchTableProps> = ({ refreshTrigger }) => {
                     <td className="border p-0 text-center border-gray-300">
                       {item.partyName}
                     </td>
-            
+
                     <td className="border p-0 text-center border-gray-300">
-                    {new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(item.orderAmt)}
+                      {new Intl.NumberFormat("en-IN", {
+                        style: "currency",
+                        currency: "INR",
+                        maximumFractionDigits: 0,
+                      }).format(item.orderAmt)}
                     </td>
                     <td className="border p-0 text-center border-gray-300">
                       {item.tags}
