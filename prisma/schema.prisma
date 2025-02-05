@@ -3,18 +3,376 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+model acbal {
+  ID        Int      @unique
+  CompanyID Int?
+  AID       String   @id @db.VarChar(255)
+  Opening   String?  @db.VarChar(255)
+  Balance   String?  @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model account {
+  ID        Int       @id
+  CompanyID Int?
+  Voucher   Int?
+  Date      DateTime?
+  Code      String?   @db.VarChar(10)
+  Amount    Int?
+  Book      String?   @db.Char(1)
+  Code1     String?   @db.VarChar(10)
+  GCode     String?   @db.VarChar(10)
+  Remark    String?   @db.VarChar(255)
+  AddField  String?   @db.VarChar(255)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+}
+
+model acgroup {
+  ID        Int      @unique
+  CompanyID Int?
+  AID       String   @id @db.VarChar(10)
+  Name      String?  @db.VarChar(255)
+  Under     String?  @db.VarChar(10)
+  AddField  String?  @db.VarChar(35)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model dis {
+  ID        BigInt    @id
+  CompanyID Int?
+  Voucher   Int?
+  Type      String?   @db.Char(1)
+  VCN       String?   @db.VarChar(35)
+  Date      DateTime?
+  CID       String?   @db.VarChar(10)
+  PID       String?   @db.VarChar(10)
+  GCode     String?   @db.VarChar(10)
+  Batch     String?   @db.VarChar(35)
+  BatDet    String?   @db.VarChar(35)
+  Qty       Int?
+  Free      Int?
+  MRP       Decimal?  @db.Decimal(20, 2)
+  Rate      Decimal?  @db.Decimal(20, 2)
+  Discount  Decimal?  @db.Decimal(20, 2)
+  Amount    Decimal?  @db.Decimal(30, 2)
+  GST       Int?
+  GSTAmount Decimal?  @db.Decimal(30, 2)
+  AddField  String?   @db.VarChar(255)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+}
+
+model masters {
+  ID        Int      @id
+  CompanyID Int?
+  Code      String?  @db.VarChar(10)
+  Name      String?  @db.VarChar(35)
+  StoreID   String?  @db.VarChar(35)
+  Licence   Int?
+  Branch    String?  @db.VarChar(50)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model mdis {
+  ID        BigInt    @unique
+  CompanyID Int?
+  Voucher   Int       @id
+  Type      String?   @db.Char(1)
+  VCN       String?   @db.VarChar(35)
+  Date      DateTime?
+  CID       String?   @db.VarChar(10)
+  Final     Decimal?  @db.Decimal(20, 0)
+  Cash      Decimal?  @db.Decimal(20, 0)
+  Others    Decimal?  @db.Decimal(20, 0)
+  Salun     String?   @db.VarChar(10)
+  MR        String?   @db.VarChar(10)
+  Rout      String?   @db.VarChar(10)
+  Area      String?   @db.VarChar(10)
+  ORN       String?   @db.VarChar(50)
+  AddField  String?   @db.VarChar(255)
+  ODate     DateTime? @db.DateTime(0)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+}
+
+model metaData {
+  id         Int       @id @default(autoincrement())
+  Index      Int?
+  ApiName    String?   @db.VarChar(255)
+  Datastatus String?   @db.VarChar(255)
+  Status     String?   @db.VarChar(255)
+  DateTime   DateTime? @db.DateTime(0)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+model outstanding {
+  ID        Int       @unique
+  CompanyID Int?
+  ORD       String?   @db.VarChar(255)
+  Date      DateTime?
+  VCN       String?   @db.VarChar(35)
+  Days      Int?
+  Final     Decimal?  @db.Decimal(20, 2)
+  Balance   Decimal?  @db.Decimal(20, 2)
+  PdLess    Decimal?  @db.Decimal(20, 2)
+  Group     String?   @db.VarChar(5)
+  Voucher   Int       @id
+  SVoucher  Int?
+  AddField  String?   @db.VarChar(255)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+}
+
+model partyc {
+  ID        Int      @unique
+  CompanyID Int?
+  GSTNo     String?  @db.VarChar(15)
+  Rout      String?  @db.VarChar(10)
+  Area      String?  @db.VarChar(10)
+  MR        String?  @db.VarChar(10)
+  SCode     String?  @db.VarChar(5)
+  CID       String   @id @db.VarChar(10)
+  ParNam    String?  @db.VarChar(255)
+  ParAdd1   String?  @db.VarChar(255)
+  ParAdd2   String?  @db.VarChar(255)
+  Rate      String?  @db.Char(1)
+  Phone1    String?  @db.VarChar(15)
+  Phone2    String?  @db.VarChar(15)
+  Phone3    String?  @db.VarChar(15)
+  Phone4    String?  @db.VarChar(15)
+  Credit    Int?
+  CRDays    Int?
+  CRBills   String?  @db.VarChar(50)
+  CRStatus  String?  @db.VarChar(5)
+  MargCode  String?  @db.VarChar(50)
+  AddField  String?  @db.VarChar(50)
+  DlNo      String?  @db.VarChar(50)
+  Pin       String?  @db.Char(6)
+  Lat       String?  @db.VarChar(10)
+  Lng       String?  @db.VarChar(10)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model partym {
+  rid        Int      @id
+  area       String?  @db.VarChar(10)
+  code       String?  @db.VarChar(10)
+  address    String?  @db.VarChar(255)
+  name       String?  @db.VarChar(255)
+  balance    Decimal? @db.Decimal(20, 2)
+  pdc        Decimal? @db.Decimal(20, 2)
+  gcode      String?  @db.VarChar(5)
+  opening    Decimal? @db.Decimal(20, 2)
+  Is_Deleted Boolean? @default(false)
+  phone1     String?  @db.VarChar(15)
+  phone2     String?  @db.VarChar(15)
+  phone3     String?  @db.VarChar(15)
+  phone4     String?  @db.VarChar(15)
+  email1     String?  @db.VarChar(255)
+  email2     String?  @db.VarChar(255)
+  email3     String?  @db.VarChar(255)
+  bank       String?  @db.VarChar(50)
+  branch     String?  @db.VarChar(50)
+  MargCode   String?  @db.VarChar(50)
+  GSTIN      String?  @db.VarChar(50)
+  DlNo       String?  @db.VarChar(50)
+  LedgerCode String?  @db.VarChar(15)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model pbal {
+  ID        Int      @id
+  CompanyID Int?
+  CID       String?  @db.VarChar(10)
+  Opening   Decimal? @db.Decimal(20, 2)
+  Balance   Decimal? @db.Decimal(20, 2)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model pro_n {
+  rid         Int       @id
+  catcode     String?   @db.VarChar(15)
+  code        Int?
+  name        String?   @db.VarChar(100)
+  stock       Int?
+  remark      String?   @db.VarChar(100)
+  company     String?   @db.VarChar(50)
+  shopcode    String?   @db.VarChar(20)
+  MRP         Decimal?  @db.Decimal(20, 2)
+  Rate        Decimal?  @db.Decimal(10, 2)
+  Deal        Int?
+  Free        Int?
+  PRate       Decimal?  @db.Decimal(10, 2)
+  Is_Deleted  Boolean
+  curbatch    String?   @db.VarChar(50)
+  exp         DateTime?
+  gcode       String?   @db.VarChar(10)
+  MargCode    String?   @db.VarChar(20)
+  Conversion  Int?
+  Salt        String?   @db.VarChar(20)
+  ENCODE      String?   @db.VarChar(20)
+  remarks     String?   @db.VarChar(255)
+  Gcode6      String?   @db.VarChar(10)
+  ProductCode String?   @db.VarChar(255)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model pro_r {
+  code        Int      @id
+  stock       Int
+  MRP         Decimal? @db.Decimal(20, 2)
+  Rate        Decimal? @db.Decimal(10, 2)
+  Deal        Int?
+  Free        Int?
+  PRate       Decimal? @db.Decimal(10, 2)
+  ProductCode String?  @db.VarChar(255)
+  Curbatch    String?  @db.VarChar(255)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model pro_s {
+  code        String   @id @db.VarChar(255)
+  stock       String?  @db.VarChar(255)
+  ProductCode String?  @db.VarChar(50)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model pro_u {
+  rid         Int       @id
+  catcode     String?   @db.VarChar(15)
+  code        Int?
+  name        String?   @db.VarChar(100)
+  stock       Int?
+  remark      String?   @db.VarChar(100)
+  company     String?   @db.VarChar(50)
+  shopcode    String?   @db.VarChar(50)
+  MRP         Decimal?  @db.Decimal(10, 2)
+  Rate        Decimal?  @db.Decimal(10, 2)
+  Deal        Int?
+  Free        Int?
+  PRate       Decimal?  @db.Decimal(10, 2)
+  Is_Deleted  Boolean
+  curbatch    String?   @db.VarChar(50)
+  exp         DateTime?
+  gcode       String?   @db.VarChar(10)
+  MargCode    String?   @db.VarChar(20)
+  Conversion  Int?
+  Salt        String?   @db.VarChar(10)
+  ENCODE      String?   @db.VarChar(255)
+  remarks     String?   @db.VarChar(255)
+  Gcode6      String?   @db.VarChar(10)
+  ProductCode String?   @db.VarChar(255)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model product {
+  ID        Int      @unique
+  CompanyID Int?
+  PID       Int      @id
+  Code      String?  @db.VarChar(50)
+  Name      String?  @db.VarChar(255)
+  Unit      String?  @db.VarChar(255)
+  Pack      Int?
+  GCode     String?  @db.VarChar(10)
+  GCode3    String?  @db.VarChar(10)
+  GCode5    String?  @db.VarChar(10)
+  GCode6    String?  @db.VarChar(10)
+  GST       Int?
+  MargCode  String?  @db.VarChar(20)
+  AddField  String?  @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model saletype {
+  ID        Int      @id
+  CompanyID Int?
+  SGCode    String?  @db.VarChar(20)
+  SCode     String?  @db.VarChar(20)
+  Name      String?  @db.VarChar(255)
+  Main      String?  @db.VarChar(10)
+  MargCode  String?  @db.VarChar(50)
+  AddField  String?  @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model stock {
+  ID        Int       @id
+  CompanyID Int?
+  PID       Int?
+  GCode     String?   @db.VarChar(10)
+  Batch     String?   @db.VarChar(50)
+  BatDate   DateTime?
+  BatDet    String?   @db.VarChar(100)
+  Expiry    DateTime?
+  SupInvo   String?   @db.VarChar(20)
+  SupDate   DateTime?
+  SupCode   String?   @db.VarChar(255)
+  Opening   Int?
+  Stock     Int?
+  BrkStock  Int?
+  LPRate    Decimal?  @db.Decimal(10, 2)
+  PRate     Decimal?  @db.Decimal(10, 2)
+  MRP       Decimal?  @db.Decimal(20, 2)
+  RateA     Decimal?  @db.Decimal(10, 2)
+  RateB     Decimal?  @db.Decimal(10, 2)
+  RateC     Decimal?  @db.Decimal(10, 2)
+  AddField  String?   @db.VarChar(255)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+}
+
+model stype {
+  rid        Int      @id
+  sgcode     String?  @db.VarChar(10)
+  scode      String?  @db.VarChar(10)
+  name       String?  @db.VarChar(255)
+  Is_Deleted Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+}
+
+model users {
+  RowID      Int      @id
+  UserID     String?  @db.VarChar(255)
+  Name       String?  @db.VarChar(255)
+  Address1   String?  @db.VarChar(255)
+  Address2   String?  @db.VarChar(255)
+  Address3   String?  @db.VarChar(255)
+  Phone      String?  @db.VarChar(255)
+  Mobile     String?  @db.VarChar(255)
+  Email      String?  @db.VarChar(255)
+  Is_Deleted Boolean  @default(false)
+  Type       String?  @db.VarChar(5)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
 }
 
 model Dispatch {
   id            String    @id @default(uuid())
-  challanNo     String    @unique
+  challanNo     String?
   challanDate   DateTime?
   partyCode     String?
   partyName     String
-  partyPlace    String
-  orderAmt      Float
+  partyPlace    String?
+  orderAmt      Float?
   transportName String?
   lrNo          String?
   lrDate        DateTime?
@@ -22,12 +380,13 @@ model Dispatch {
   salesRep      String?
   invoiceNo     String?
   invoiceDate   DateTime?
+  totalItems    Int?
+  totalQty      Int?
   packingTime   DateTime?
   orderStatus   String?
   remarks       String?
   tags          Json?
-  totalItems    Int?
-  totalQty      Int?
+  Voucher       Int?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }

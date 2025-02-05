@@ -8,6 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "seeddb": "tsx prisma/utils/seed.ts",
+    "initdb": "tsx db/initdb.ts",
+    "updatedb": "tsx db/updateDB.ts",
     "resetdb": "tsx prisma/utils/restdb.ts"
   },
   "dependencies": {
@@ -16,8 +18,12 @@
     "@tanstack/react-query": "^5.64.2",
     "axios": "^1.7.9",
     "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.7",
+    "mysql2": "^3.12.0",
     "next": "15.1.5",
     "next-auth": "^5.0.0-beta.25",
+    "node-cron": "^3.0.3",
+    "node-fetch": "^3.3.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.54.2",
