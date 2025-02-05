@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import useSerialPort from "@/lib/serialPort";
 import { saveDispatchRecord } from "@/action/dispatchReg/dispatch";
 import ErrorMessage from "@/components/ErrorMessage";
+import DispatchUpdate from "@/components/Dispatch/DispatchUpdate";
 import DispatchTable from "@/components/Dispatch/DispatchTable";
 
 type CleanInputFn = (input: string) => string;
@@ -51,6 +52,12 @@ const DispatchScreen: React.FC = () => {
           toast.success("Record added successfully");
           setRefreshTable((prev) => !prev);
         } catch (error: any) {
+          const modal = document.getElementById(
+            "my_modal_1"
+          ) as HTMLDialogElement;
+          if (modal) {
+            modal?.showModal();
+          }
           toast.error(error.message || "Invalid input");
         }
         setPrevData(serialData);
@@ -76,6 +83,7 @@ const DispatchScreen: React.FC = () => {
 
   return (
     <div>
+      <DispatchUpdate />
       <div>{connectionStatus || ""}</div>
 
       {!isManual ? (
@@ -97,6 +105,7 @@ const DispatchScreen: React.FC = () => {
           >
             Manual
           </button>
+
           {!connected ? (
             <input
               type="text"
