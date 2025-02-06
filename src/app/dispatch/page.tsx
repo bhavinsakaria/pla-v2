@@ -84,10 +84,9 @@ const DispatchScreen: React.FC = () => {
   return (
     <div>
       <DispatchUpdate />
-      <div>{connectionStatus || ""}</div>
-
       {!isManual ? (
-        <div>
+        <div className=" lg:max-w-7xl mx-auto">
+          <div>{connectionStatus || ""}</div>
           <button
             className={`btn ${
               connected
@@ -111,7 +110,7 @@ const DispatchScreen: React.FC = () => {
               type="text"
               placeholder="Please Scan Here"
               onKeyDown={handleScan}
-              className="input input-primary border-gray-300 w-full lg:w-3/4 hover:border-gray-400"
+              className="input input-primary border-gray-300 w-full lg:w-3/4 hover:border-gray-400 m-2"
             />
           ) : null}
         </div>
@@ -140,7 +139,7 @@ const DispatchScreen: React.FC = () => {
                 <input
                   type="date"
                   placeholder="Enter Challan Date"
-                  {...register("challanDate")}
+                  {...register("challanDate") }
                   className="input input-primary border-gray-300 hover:border-gray-400"
                 />
                 <ErrorMessage>{errors.challanDate?.message}</ErrorMessage>
@@ -235,8 +234,7 @@ function processData(input: string): DispatchRegister {
       return {
         challanNo: parsedData.DN.trim(),
         partyCode: parsedData.PC?.trim() || null,
-        partyName: parsedData.PN?.trim(),
-        partyPlace: parsedData.STN?.trim(),
+        partyName: parsedData.PN?.trim() + " " + parsedData.STN?.trim(),
         transportName: parsedData.TN?.trim(),
         orderStatus: "Printed",
       };

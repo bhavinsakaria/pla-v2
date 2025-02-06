@@ -11,6 +11,7 @@ async function saveDispatchRecord(data: DispatchRegister): Promise<any> {
   const validateData = dispatchRegisterSchema.safeParse(data);
   try {
     if (!validateData.success) {
+      console.log(data)
       throw new Error(validateData.error.message);
     }
     return await db.dispatch.create({

@@ -10,6 +10,7 @@
     "seeddb": "tsx prisma/utils/seed.ts",
     "initdb": "tsx db/initdb.ts",
     "updatedb": "tsx db/updateDB.ts",
+    "synctask": "tsx db/sync_task.ts",
     "resetdb": "tsx prisma/utils/restdb.ts"
   },
   "dependencies": {

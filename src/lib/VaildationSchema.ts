@@ -4,9 +4,9 @@ export const dispatchRegisterSchema = z.object({
   challanNo: z
     .string()
     .min(3, "Challan number must have at least 3 characters"),
-  challanDate: z
-    .string()
-    .transform((value) => new Date(value))
+    challanDate: z
+    .union([z.string(), z.date()])
+    .transform((val) => (typeof val === "string" ? new Date(val) : val))
     .refine((date) => !isNaN(date.valueOf()), "Invalid date format")
     .optional(),
   partyName: z.string().min(3, "Party name must have at least 3 characters"),
