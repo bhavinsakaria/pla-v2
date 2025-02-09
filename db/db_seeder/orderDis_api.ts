@@ -1,7 +1,6 @@
 import fetch from 'node-fetch';
 import crypto from 'crypto';
 import zlib from 'zlib';
-
 import { loadJsonToMySQL } from './json_to_sql';
 
 interface Payload {
@@ -14,7 +13,7 @@ interface Payload {
 }
 
 interface OrderInfo {
-  // Define the structure of the OrderInfo object here if you need
+  // Define the structure of the OrderInfo object if you need specific fields
 }
 
 interface ApiResponse {
@@ -58,18 +57,10 @@ export async function ApiOrderDispatch(db_name: string, data_time?: string): Pro
     const responseText = await response.text();
 
     // Step 2: Decrypt the response
-    const decipher = crypto.createDecipheriv(
-      'aes-128-cbc',
-      Buffer.from(fixedKey),
-      iv
-    );
+    const decipher = crypto.createDecipheriv('aes-128-cbc', Buffer.from(fixedKey), iv);
 
-    let decrypted = decipher.update(
-      Buffer.from(responseText, 'base64'),
-      'binary',
-      'utf8'
-    );
-
+    let decrypted = decipher.update(Buffer.from(responseText, 'base64'), undefined, 'utf8');
+   
     try {
       decrypted += decipher.final('utf8'); // Finalize decryption
     } catch (error) {
@@ -78,7 +69,7 @@ export async function ApiOrderDispatch(db_name: string, data_time?: string): Pro
       const inflatedBuffer = zlib.inflateRawSync(decoded);
       const data = inflatedBuffer.toString('utf8').substring(1);
       console.log(data);
-      return `Error decrypting response: ${error.message}`;
+      return `Error decrypting response: ${error instanceof Error ? error.message : String(error)}`;
     }
 
     // Step 3: Decode second base64 and decompress

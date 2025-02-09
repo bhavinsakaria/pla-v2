@@ -1,33 +1,25 @@
-import mysql from 'mysql2/promise';
-import {connectDB} from "../connectDB";
-interface MetadataRow {
-  DateTime: string;
-}
+import mysql, { Pool, PoolConnection, RowDataPacket } from "mysql2/promise";
+import { connectDB } from "../connectDB";
 
-export async function LoadDateTimeSql(db_name: string, apiName: string): Promise<string> {
+interface MetadataRow extends RowDataPacket {
+    DateTime: string;
+  }
+export async function LoadDateTimeSql(db_name: string, apiName: string): Promise<string | null> {
+  const pool: Pool = await connectDB(db_name);
+  const connection: PoolConnection = await pool.getConnection();
 
-    const connection : mysql.Pool = await connectDB(db_name);
+  try {
+    // Use a parameterized query to prevent SQL injection
+    const [rows] = await connection.query<MetadataRow[]>(
+      `SELECT DateTime FROM metadata WHERE ApiName = ? LIMIT 1`,
+      [apiName]
+    );
 
-    try {
-        // Get a connection from the pool
-        
-
-        // Use a parameterized query to prevent SQL injection
-        const [rows] = await connection.query<MetadataRow[]>(
-            `SELECT DateTime FROM metadata WHERE ApiName = ?`, 
-            [apiName]
-        );
-
-        if (rows.length > 0) {
-            return rows[0].DateTime;
-        } else {
-            throw new Error('DateTime not found in metadata table');
-        }
-    } catch (error) {
-        throw error;
-    } finally {
-        if (connection) {
-            connection.release();
-        }
-    }
+    return rows.length > 0 ? rows[0].DateTime : null; // Return null instead of throwing error
+  } catch (error) {
+    console.error("Error fetching DateTime:", error);
+    throw error;
+  } finally {
+    connection.release(); // Always release the connection
+  }
 }

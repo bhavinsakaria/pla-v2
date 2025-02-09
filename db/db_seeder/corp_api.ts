@@ -5,11 +5,11 @@ import dotenv from 'dotenv';
 import { loadJsonToMySQL } from './json_to_sql';
 
 interface ApiPayload {
-  CompanyCode: string;
+  CompanyCode?: string;
   Datetime: string;
-  MargKey: string;
+  MargKey?: string;
   Index: string;
-  CompanyID: string;
+  CompanyID?: string;
   APIType: string;
 }
 
@@ -18,6 +18,10 @@ export async function ApiCroprateData(db_name: string, data_time?: string): Prom
 
   const url = process.env.CORP_API_URL;
   const key = process.env.CORP_API_KEY;
+
+  if (!url || !key) {
+    throw new Error('CORP_API_URL environment variable is not set');
+  }
   
   const payload: ApiPayload = {
     CompanyCode: process.env.CORP_COMPANY_CODE,
@@ -51,8 +55,9 @@ export async function ApiCroprateData(db_name: string, data_time?: string): Prom
     // Step 2: Decrypt the response
     const decipher = crypto.createDecipheriv('aes-128-cbc', Buffer.from(fixedKey), iv);
 
-    let decrypted = decipher.update(Buffer.from(responseText, 'base64'), 'binary', 'utf8');
-    decrypted += decipher.final('utf8'); // Ensure to finalize the decryption
+    let decrypted = decipher.update(Buffer.from(responseText, 'base64'), undefined, 'utf8');
+    decrypted += decipher.final('utf8'); // Finalize the decryption
+ 
 
     // Step 3: Decode second base64 and decompress
     const decoded: Buffer = Buffer.from(decrypted, 'base64');
@@ -72,7 +77,7 @@ export async function ApiCroprateData(db_name: string, data_time?: string): Prom
     } catch (inflateError) {
       throw new Error(`Error inflating data: ${inflateError}`);
     }
-  } catch (error) {
+  } catch (error:any) {
     return `Error occurred: ${error.message}`;
   }
 }

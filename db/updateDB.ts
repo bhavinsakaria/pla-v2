@@ -10,8 +10,8 @@ type ApiResult = string; // Assuming the API results are strings, modify based o
 async function main(): Promise<void> {
     try {
         // Fetch the datetime values first
-        const dataTime_mst = await LoadDateTimeSql("pla", "master");
-        const dataTime_crop = await LoadDateTimeSql("pla", "corp");
+        const dataTime_mst = await LoadDateTimeSql("pla", "master") ?? "";
+        const dataTime_crop = await LoadDateTimeSql("pla", "corp") ?? "";
 
         // Run both APIs concurrently using Promise.all
         const [master, crop]: [ApiResult, ApiResult] = await Promise.all([

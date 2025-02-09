@@ -5,10 +5,10 @@ import { ApiCroprateData } from "./db_seeder/corp_api";
 // Assuming LoadDateTimeSql returns a string representing the DateTime
 async function main(): Promise<void> {
     // Assuming dataTime and dataTime_crop are strings or Date objects
-    const dataTime: string = await LoadDateTimeSql("crop_data");
+    const dataTime: string = await LoadDateTimeSql("pla","master") ?? "";
     await ApiMasterData("crop_data_dt", dataTime);
 
-    const dataTime_crop: string = await LoadDateTimeSql("corp_data");
+    const dataTime_crop: string = await LoadDateTimeSql("pla","corp") ?? "";
     await ApiCroprateData("corp_data_dt", dataTime_crop);
 
     // Re-run the APIs with the newly fetched DateTimes

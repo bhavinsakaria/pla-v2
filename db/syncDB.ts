@@ -25,7 +25,7 @@ async function runTask(taskName: string, taskFunction: () => Promise<any>): Prom
  * @returns A promise that resolves to the master sync result.
  */
 async function syncMaster(): Promise<any> {
-  const dataTimeMaster = await LoadDateTimeSql("pla", "master");
+  const dataTimeMaster = await LoadDateTimeSql("pla", "master") ?? "";
   return ApiMasterData("pla", dataTimeMaster);
 }
 
@@ -34,7 +34,7 @@ async function syncMaster(): Promise<any> {
  * @returns A promise that resolves to the corporate sync result.
  */
 async function syncCorp(): Promise<any> {
-  const dataTimeCorp = await LoadDateTimeSql("pla", "corp");
+  const dataTimeCorp = await LoadDateTimeSql("pla", "corp")??"";
   return ApiCroprateData("pla", dataTimeCorp);
 }
 
