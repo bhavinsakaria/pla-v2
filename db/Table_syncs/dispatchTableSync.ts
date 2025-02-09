@@ -14,6 +14,7 @@ interface MasterDispatchData {
     Final?: number;
     Others?: number;
     Date?: string;
+    Voucher?: number;
 }
 
 interface PartyData {
@@ -22,13 +23,13 @@ interface PartyData {
     salesRep: string;
 }
 
-export async function syncDispatch(): Promise<void> {
+export async function syncDispatch(): Promise<any> {
     try {
-        const dispatchRecords = await prisma.dispatch.findMany({ where: { Voucher: null } });
+        const dispatchRecords = await prisma.dispatch.findMany({ where: { invoiceNo: null } });
         
         for (const record of dispatchRecords) {
             const { challanNo, id } = record;
-            const dispatchData = await getDispatchData(challanNo ?? "");
+            const dispatchData = await getDispatchData(challanNo ?? "","I");
             
             if (dispatchData) {
                 const { Voucher, VCN, challanDate, cancelInfo } = dispatchData;
@@ -59,8 +60,31 @@ export async function syncDispatch(): Promise<void> {
                         });
                     }
                 }
+            } else{
+                const masterDispatchDataChallan = await getMasterDispatchDataChallan(challanNo ?? "");
+                if (masterDispatchDataChallan) {
+                    const { CID, MR, Final = 0, Others = 0, Date: challanDate,Voucher } = masterDispatchDataChallan;
+                    const partyData = await getPartyData(CID, MR);
+                    if (partyData) {
+                        const { partyName, partyCode, salesRep } = partyData;
+                        const orderAmt = Final - Others;
+                       
+                        await prisma.dispatch.update({
+                            where: { id },
+                            data: {
+                                challanDate,
+                                partyCode,
+                                partyName,
+                                orderAmt,
+                                salesRep,
+                                Voucher
+                            }
+                        });
+                    }
+                }
             }
         }
+        return "Dispatch table synced successfully!";
     } catch (error) {
         console.error("Error in syncDispatch:", error);
     }
@@ -84,13 +108,31 @@ async function getMasterDispatchData(Voucher: number): Promise<MasterDispatchDat
     }
 }
 
-async function getDispatchData(challanNo: string): Promise<DispatchData | null> {
+async function getMasterDispatchDataChallan(VCN: string): Promise<MasterDispatchData | null> {
+    try {
+        const data = await prisma.mdis.findFirst({ where: { VCN } });
+        if (!data) return null;
+
+        return {
+            CID: data.CID ?? "", // Provide a default value if CID is null
+            MR: data.MR ?? "",
+            Final: Number(data.Final) ?? 0,
+            Others: Number(data.Others) ?? 0,
+            Date: data.Date?.toISOString(), // Convert Date to string
+        };
+    } catch (error) {
+        console.error("Error fetching master dispatch data:", error);
+        return null;
+    }
+}
+
+async function getDispatchData(challanNo: string,type:string): Promise<DispatchData | null> {
     const {startDate,endDate} = await getFinancialYearDates()
     try {
         const records = await prisma.dis.findMany({
             where: {
                 AND: [
-                    { AddField: { startsWith: "I" } },
+                    { AddField: { startsWith: type } },
                     { AddField: { contains: challanNo } },
                     {Date : { gte: startDate, lte: endDate }}
                     
@@ -156,4 +198,3 @@ async function getFinancialYearDates(date = new Date()) {
     };
 }
 
-syncDispatch().catch(error => console.error("Unhandled error in syncDispatch:", error));
