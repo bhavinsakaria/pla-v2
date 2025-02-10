@@ -50,7 +50,7 @@ export async function syncDispatch(): Promise<any> {
                     if (partyData) {
                         const { partyName, partyCode, salesRep } = partyData;
                         const orderAmt = Final - Others;
-                        const orderStatus = (cancelInfo || "").includes("CANCELLED") ? "Cancelled" : "Packed";
+                        const orderStatus = (cancelInfo || "").includes("CANCELLED:1") ? "Cancelled" : "Packed";
                         
                         await prisma.dispatch.update({
                             where: { id },
@@ -80,7 +80,7 @@ export async function syncDispatch(): Promise<any> {
                         const { partyName, partyCode, salesRep } = partyData;
                         const orderAmt = Final - Others;
 
-                        const orderStatus = (cancelInfo || "").includes("CANCELLED") ? "Cancelled" : "Not Printed";
+                        const orderStatus = (cancelInfo || "").includes("CANCELLED:1") ? "Cancelled" : "Not Printed";
                         await prisma.dispatch.update({
                             where: { id },
                             data: {
