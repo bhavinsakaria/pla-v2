@@ -28,10 +28,11 @@ export async function syncDispatch(): Promise<any> {
         await registerChallanData();
         const dispatchRecords = await prisma.dispatch.findMany({
             where: {
-                AND:[
-                {invoiceNo: null},
-               // {orderStatus: { not: "Cancelled" }}, // Exclude cancelled orders
-                ]
+                invoiceNo: null,
+                OR: [
+                    { orderStatus: { not: "Cancelled" } }, // Include orders that are not "CANCELLED"
+                    { orderStatus: null }, // Include orders where orderStatus is NULL
+                ],
             },
         });
         
