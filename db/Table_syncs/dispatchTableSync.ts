@@ -25,7 +25,15 @@ interface PartyData {
 
 export async function syncDispatch(): Promise<any> {
     try {
-        const dispatchRecords = await prisma.dispatch.findMany({ where: { invoiceNo: null } });
+        await registerChallanData();
+        const dispatchRecords = await prisma.dispatch.findMany({
+            where: {
+                AND:[
+                {invoiceNo: null},
+               // {orderStatus: { not: "Cancelled" }}, // Exclude cancelled orders
+                ]
+            },
+        });
         
         for (const record of dispatchRecords) {
             const { challanNo, id } = record;
@@ -42,7 +50,7 @@ export async function syncDispatch(): Promise<any> {
                     if (partyData) {
                         const { partyName, partyCode, salesRep } = partyData;
                         const orderAmt = Final - Others;
-                        const orderStatus = cancelInfo.includes("CANCELLED") ? "Cancelled" : "Packed";
+                        const orderStatus = (cancelInfo || "").includes("CANCELLED") ? "Cancelled" : "Packed";
                         
                         await prisma.dispatch.update({
                             where: { id },
@@ -61,6 +69,9 @@ export async function syncDispatch(): Promise<any> {
                     }
                 }
             } else{
+                const dispatchchallan = await getDispatchChallan(challanNo ?? "","C");
+                if (dispatchchallan){
+                const {cancelInfo } = dispatchchallan;
                 const masterDispatchDataChallan = await getMasterDispatchDataChallan(challanNo ?? "");
                 if (masterDispatchDataChallan) {
                     const { CID, MR, Final = 0, Others = 0, Date: challanDate,Voucher } = masterDispatchDataChallan;
@@ -68,7 +79,8 @@ export async function syncDispatch(): Promise<any> {
                     if (partyData) {
                         const { partyName, partyCode, salesRep } = partyData;
                         const orderAmt = Final - Others;
-                       
+
+                        const orderStatus = (cancelInfo || "").includes("CANCELLED") ? "Cancelled" : "Not Printed";
                         await prisma.dispatch.update({
                             where: { id },
                             data: {
@@ -77,13 +89,18 @@ export async function syncDispatch(): Promise<any> {
                                 partyName,
                                 orderAmt,
                                 salesRep,
-                                Voucher
+                                Voucher,
+                                orderStatus
+
                             }
                         });
                     }
                 }
             }
+            }
         }
+
+
         return "Dispatch table synced successfully!";
     } catch (error) {
         console.error("Error in syncDispatch:", error);
@@ -112,7 +129,7 @@ async function getMasterDispatchDataChallan(VCN: string): Promise<MasterDispatch
     try {
         const data = await prisma.mdis.findFirst({ where: { VCN } });
         if (!data) return null;
-
+        
         return {
             CID: data.CID ?? "", // Provide a default value if CID is null
             MR: data.MR ?? "",
@@ -126,6 +143,37 @@ async function getMasterDispatchDataChallan(VCN: string): Promise<MasterDispatch
     }
 }
 
+
+async function getDispatchChallan(challanNo: string,type:string): Promise<DispatchData | null> {
+    const {startDate,endDate} = await getFinancialYearDates()
+    try {
+        const records = await prisma.dis.findMany({
+            where: {
+                AND: [
+                    { AddField: { startsWith: type } },
+                    {VCN : challanNo },
+                    {Date : { gte: startDate, lte: endDate }}
+                    
+                ]
+            }
+
+        });
+
+        if (records.length === 0) return null;
+        
+        const { Voucher, VCN, AddField } = records[0];
+        const dataArray = AddField?.split(";") ?? [];
+        
+        if (dataArray.length < 24) return null;
+
+        const challanDate = parseDate(dataArray[23]);
+       
+        return { Voucher: records[0].Voucher?.valueOf() ?? 0, VCN: records[0].VCN?.toString() ?? "", challanNo: dataArray[22], challanDate, cancelInfo: dataArray[25] };
+    } catch (error) {
+        console.error("Error fetching dispatch data:", error);
+        return null;
+    }
+}
 async function getDispatchData(challanNo: string,type:string): Promise<DispatchData | null> {
     const {startDate,endDate} = await getFinancialYearDates()
     try {
@@ -149,7 +197,8 @@ async function getDispatchData(challanNo: string,type:string): Promise<DispatchD
         if (dataArray.length < 24) return null;
 
         const challanDate = parseDate(dataArray[23]);
-        return { Voucher: records[0].Voucher?.valueOf() ?? 0, VCN: records[0].VCN?.toString() ?? "", challanNo: dataArray[22], challanDate, cancelInfo: dataArray[24] };
+
+        return { Voucher: records[0].Voucher?.valueOf() ?? 0, VCN: records[0].VCN?.toString() ?? "", challanNo: dataArray[22], challanDate, cancelInfo: dataArray[25] };
     } catch (error) {
         console.error("Error fetching dispatch data:", error);
         return null;
@@ -173,6 +222,46 @@ async function getPartyData(CID: string, MR: string): Promise<PartyData | null> 
         console.error("Error fetching party data:", error);
         return null;
     }
+}
+
+async function registerChallanData() {
+    const {startDate,endDate} = await getFinancialYearDates()
+    const type = "C";
+    const dispatchRecords = await prisma.dispatch.findMany({
+        select: { challanNo: true },
+    });
+
+    const challanNos = dispatchRecords.map(record => record?.challanNo).filter(val => val !== null);
+
+    const result = await prisma.mdis.findMany({
+        where: {
+            AND: [
+                { Type: "S" },
+                { AddField: { startsWith: type } },
+                {Date : { gte: startDate, lte: endDate }}
+                
+            ],
+            NOT: {
+                VCN: {
+                    in: challanNos,
+                },
+            },
+        },
+        select: {
+            VCN: true,
+            Voucher: true,
+
+        }
+    });
+
+        // Renaming VCN to challanNo in the result set
+        const renamedResult = result.map(record => ({
+            challanNo: record.VCN ?? '',  // Provide a default value when record.VCN is null
+            partyName:"",
+            Voucher:record.Voucher
+        }));
+    
+        await prisma.dispatch.createMany({ data: renamedResult });
 }
 
 function parseDate(dateString: string): Date | null {

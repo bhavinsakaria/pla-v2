@@ -149,7 +149,7 @@ const DispatchTable: React.FC<DispatchTableProps> = ({ refreshTrigger }) => {
                       {item.challanNo}
                     </td>
                     <td className="border p-0 text-center border-gray-300">
-                      {new Date(item.challanDate).toLocaleDateString()}
+                    {item.challanDate ? new Date(item.challanDate).toLocaleDateString() : ''}
                     </td>
                     <td className="border p-0 text-center border-gray-300">
                       {item.invoiceNo}
@@ -159,11 +159,11 @@ const DispatchTable: React.FC<DispatchTableProps> = ({ refreshTrigger }) => {
                     </td>
 
                     <td className="border p-0 text-center border-gray-300">
-                      {new Intl.NumberFormat("en-IN", {
-                        style: "currency",
-                        currency: "INR",
-                        maximumFractionDigits: 0,
-                      }).format(item.orderAmt)}
+                    {new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 0,
+  }).format(item.orderAmt ?? 0)}
                     </td>
                     <td className="border p-0 text-center border-gray-300">
                       {item.tags}

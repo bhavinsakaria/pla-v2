@@ -11,7 +11,7 @@ import { db_prep } from "./db_prep/main";
  * @param taskFunction - The async function representing the task.
  */
 async function runTask(taskName: string, taskFunction: () => Promise<any>): Promise<void> {
-  console.log(`Running ${taskName} at ${new Date().toISOString()}`);
+  console.log(`Running ${taskName} at ${new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}`);
   try {
     const result = await taskFunction();
     console.log(`${taskName} result:`, result);

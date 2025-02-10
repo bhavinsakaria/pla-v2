@@ -425,7 +425,7 @@ CREATE TABLE `users` (
 -- CreateTable
 CREATE TABLE `Dispatch` (
     `id` VARCHAR(191) NOT NULL,
-    `challanNo` VARCHAR(191) NULL,
+    `challanNo` VARCHAR(191) NOT NULL,
     `challanDate` DATETIME(3) NULL,
     `partyCode` VARCHAR(191) NULL,
     `partyName` VARCHAR(191) NOT NULL,
@@ -448,6 +448,7 @@ CREATE TABLE `Dispatch` (
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
+    UNIQUE INDEX `Dispatch_challanNo_key`(`challanNo`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 

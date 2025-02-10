@@ -48,12 +48,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
-
+  trustHost: true,  // Add this line
   pages: {
     signIn: "/",
   },
   callbacks: {
-    async session({ session, token }) {
+    async session({ session, token }: { session: any; token: any }) {
       if (token?.sub && token?.role) {
         session.user.id = token.sub;
         session.user.role = token.role;
@@ -62,7 +62,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return session;
     },
 
-    async jwt({ token, user }) {
+    async jwt({ token, user } :{token: any, user: any}) {
       if (user) {
         token.role = user.role;
         token.sub = user.id;
