@@ -14,7 +14,7 @@ async function main(): Promise<void> {
 
         console.log(result1, result2);
         await db_prep("pla");
-        await table_sync("pla")
+        
 
     } catch (error) {
         console.error("An error occurred:", error);

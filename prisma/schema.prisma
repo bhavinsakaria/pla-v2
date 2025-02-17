@@ -384,7 +384,7 @@ model Dispatch {
   totalQty      Int?
   packingTime   DateTime?
   orderStatus   String?
-  remarks       String?
+  remarks       Json?
   tags          Json?
   Voucher       Int?
   createdAt     DateTime  @default(now())
